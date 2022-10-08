@@ -7,6 +7,11 @@ import (
 
 const EntityName = "User"
 
+type UserSimple struct {
+	common.SqlModel `json:",inline"`
+	Email           string `json:"email" gorm:"column:email;"`
+}
+
 type User struct {
 	common.SqlModel `json:",inline"`
 	Email           string `json:"email" gorm:"column:email;"`
