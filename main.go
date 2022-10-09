@@ -7,6 +7,7 @@ import (
 	"log"
 	appctx "mine-chat/component"
 	"mine-chat/middleware"
+	"mine-chat/module/chatmessage/transport/ginchatmessage"
 	"mine-chat/module/room/transport/ginchatroom"
 	userstorage "mine-chat/module/user/storage"
 	"mine-chat/module/user/transport/ginuser"
@@ -44,11 +45,12 @@ func main() {
 	chat := v1.Group("/chat")
 	{
 		chat.POST("/initiate", ginchatroom.InitiateChat(appCtx))
+		chat.POST("/:roomId/message", ginchatmessage.PostChatMessage(appCtx))
 	}
 
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
+			"chatmessage": "pong",
 		})
 	})
 

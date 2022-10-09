@@ -10,7 +10,7 @@ import (
 type AppError struct {
 	StatusCode int    `json:"status_code"`
 	RootErr    error  `json:"-"`
-	Message    string `json:"message"`
+	Message    string `json:"chatmessage"`
 	Log        string `json:"log"`
 	Key        string `json:"error_key"`
 }

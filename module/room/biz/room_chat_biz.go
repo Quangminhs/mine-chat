@@ -2,6 +2,7 @@ package roombiz
 
 import (
 	"context"
+	"mine-chat/common"
 	roommodel "mine-chat/module/room/model"
 	"sort"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 
 type chatRoomStore interface {
 	Create(context context.Context, data *roommodel.ChatRoomCreate) error
-	FindRoomWithUserIds(ctx context.Context, userIds string) (*roommodel.ChatRoomCreate, error)
+	FindRoomWithUserIds(ctx context.Context, userIds string) (int, error)
 }
 
 type chatRoomBiz struct {
@@ -41,7 +42,7 @@ func (biz chatRoomBiz) InitiateChat(ctx context.Context, data *roommodel.ChatRoo
 	userIds := strings.Join(maps[:], ",")
 	data.UserIds = userIds
 
-	chatRoom, err := biz.store.FindRoomWithUserIds(ctx, data.UserIds)
+	chatRoomId, err := biz.store.FindRoomWithUserIds(ctx, data.UserIds)
 
 	//Nếu không tìm thấy thì tạo mới room chat
 	if err != nil {
@@ -54,6 +55,6 @@ func (biz chatRoomBiz) InitiateChat(ctx context.Context, data *roommodel.ChatRoo
 	}
 
 	//Trả về id Room cho client
-	data.Id = chatRoom.Id
+	data.Id = common.GenUID(chatRoomId, common.DB_TYPE_ROOM)
 	return nil
 }

@@ -6,12 +6,12 @@ import (
 	roommodel "mine-chat/module/room/model"
 )
 
-func (s *sqlStore) FindRoomWithUserIds(ctx context.Context, userIds string) (*roommodel.ChatRoomCreate, error) {
-	var data roommodel.ChatRoomCreate
+func (s *sqlStore) FindRoomWithUserIds(ctx context.Context, userIds string) (int, error) {
+	var data roommodel.ChatRoom
 	err := s.db.Table(roommodel.ChatRoom{}.TableName()).Where("user_ids = ?", userIds).First(&data).Error
 	if err != nil {
-		return nil, common.ErrDB(err)
+		return -1, common.ErrDB(err)
 	}
 
-	return &data, nil
+	return data.Id, nil
 }

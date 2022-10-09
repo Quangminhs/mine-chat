@@ -49,14 +49,14 @@ func RequiredAuth(appCtx appctx.AppContext, authStore AuthenStore) func(c *gin.C
 		}
 
 		//db := appCtx.GetMaiDBConnection()
-		//store := userstore.NewSQLStore(db)
+		//storerage := userstore.NewSQLStore(db)
 		//
 		payload, err := tokenProvider.Validate(token)
 		if err != nil {
 			panic(err)
 		}
 		//
-		//user, err := store.FindUser(c.Request.Context(), map[string]interface{}{"id": payload.UserId})
+		//user, err := storerage.FindUser(c.Request.Context(), map[string]interface{}{"id": payload.UserId})
 
 		user, err := authStore.FindUser(c.Request.Context(), map[string]interface{}{"id": payload.UserId})
 
