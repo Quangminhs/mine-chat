@@ -12,7 +12,7 @@ import (
 
 func InitiateChat(appCtx appctx.AppContext) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var data roommodel.ChatRoomCreate
+		var data roommodel.ChatRoomRequest
 		if err := c.ShouldBind(&data); err != nil {
 			panic(err)
 		}

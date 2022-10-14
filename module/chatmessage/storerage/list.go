@@ -6,7 +6,7 @@ import (
 	modelchatmessage "mine-chat/module/chatmessage/model"
 )
 
-func (s *sqlStore) ListChatMessageByContition(ctx context.Context, conditions map[string]interface{},
+func (s *sqlStore) ListChatMessageByCondition(ctx context.Context, conditions map[string]interface{},
 	filter *modelchatmessage.Filter,
 	paging *common.Paging, moreKeys ...string,
 ) ([]modelchatmessage.ChatMessage, error) {

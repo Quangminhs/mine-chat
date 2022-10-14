@@ -10,7 +10,7 @@ import (
 )
 
 type chatRoomStore interface {
-	Create(context context.Context, data *roommodel.ChatRoomCreate) error
+	Create(context context.Context, data *roommodel.ChatRoom) error
 	FindRoomWithUserIds(ctx context.Context, userIds string) (int, error)
 }
 
@@ -24,33 +24,51 @@ func NewChatRoom(store chatRoomStore) *chatRoomBiz {
 	}
 }
 
-func (biz chatRoomBiz) InitiateChat(ctx context.Context, data *roommodel.ChatRoomCreate) error {
+func (biz chatRoomBiz) InitiateChat(ctx context.Context, data *roommodel.ChatRoomRequest) error {
 	maps := strings.Split(data.UserIds, ",")
-	sort.Slice(maps, func(i, j int) bool {
-		x, er := strconv.Atoi(maps[i])
-		if er != nil {
-			x = 0
+	for i := range maps {
+		uid, err := common.FromBase58(maps[i])
+		if err != nil {
+			return nil
 		}
-		y, er := strconv.Atoi(maps[i])
-		if er != nil {
-			y = 0
-		}
-
-		return x < y
-	})
+		maps[i] = strconv.Itoa(int(uid.GetLocalID()))
+	}
+	sort.Strings(maps)
+	//sort.Slice(maps, func(i, j int) bool {
+	//	x, er := strconv.Atoi(maps[i])
+	//	if er != nil {
+	//		x = 0
+	//	}
+	//	y, er := strconv.Atoi(maps[i])
+	//	if er != nil {
+	//		y = 0
+	//	}
+	//
+	//	return x < y
+	//})
 
 	userIds := strings.Join(maps[:], ",")
-	data.UserIds = userIds
+	//data.UserIds = userIds
 
-	chatRoomId, err := biz.store.FindRoomWithUserIds(ctx, data.UserIds)
+	chatRoomId, err := biz.store.FindRoomWithUserIds(ctx, userIds)
 
 	//Nếu không tìm thấy thì tạo mới room chat
 	if err != nil {
-		err2 := biz.store.Create(ctx, data)
+		uid, err2 := common.FromBase58(data.ChatInitiator)
 		if err2 != nil {
+			return nil
+		}
+		chatInitiator := strconv.Itoa(int(uid.GetLocalID()))
+		dataCreate := roommodel.ChatRoom{
+			UserIds:       userIds,
+			ChatInitiator: chatInitiator,
+			Type:          "public",
+		}
+		err3 := biz.store.Create(ctx, &dataCreate)
+		if err3 != nil {
 			return err2
 		}
-
+		data.Id = common.GenUID(dataCreate.Id, common.DB_TYPE_ROOM)
 		return nil
 	}
 
