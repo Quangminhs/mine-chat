@@ -45,6 +45,7 @@ func main() {
 	chat := v1.Group("/chat")
 	{
 		chat.POST("/initiate", ginchatroom.InitiateChat(appCtx))
+		chat.GET("/:roomId", ginchatmessage.ListChatMessage(appCtx))
 		chat.POST("/:roomId/message", ginchatmessage.PostChatMessage(appCtx))
 	}
 

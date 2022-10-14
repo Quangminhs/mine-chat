@@ -18,7 +18,7 @@ func PostChatMessage(ctx appctx.AppContext) func(*gin.Context) {
 			return
 		}
 
-		var data modelchatmessage.ChatMessageCreate
+		var data modelchatmessage.ChatMessageRequest
 		if err := c.ShouldBind(&data); err != nil {
 			panic(err)
 			return
@@ -31,8 +31,8 @@ func PostChatMessage(ctx appctx.AppContext) func(*gin.Context) {
 		}
 
 		dataChatMessage := modelchatmessage.ChatMessage{
-			RomChatId:        int(romChatId.GetLocalID()),
-			PostByUser:       int(postByUserId.GetLocalID()),
+			RoomChatId:       int(romChatId.GetLocalID()),
+			PostByUserId:     int(postByUserId.GetLocalID()),
 			Message:          data.Message,
 			ReadByRecipients: nil,
 		}
