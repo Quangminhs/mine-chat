@@ -2,6 +2,7 @@ package roomstorage
 
 import (
 	"context"
+	"fmt"
 	"mine-chat/common"
 	roommodel "mine-chat/module/room/model"
 )
@@ -18,8 +19,8 @@ func (s *sqlStore) FindRoomWithUserIds(ctx context.Context, userIds []int) (int,
 
 func (s *sqlStore) FindRoomWithUserId(ctx context.Context, userId int) ([]roommodel.ChatRoom, error) {
 	var data []roommodel.ChatRoom
-	err := s.db.
-		Raw(" SELECT * FROM chat_room WHERE JSON_CONTAINS(user_ids, '1','$');").Scan(&data).Error
+	sql := fmt.Sprintf("SELECT * FROM chat_room WHERE JSON_CONTAINS(user_ids, '%d','$');", userId)
+	err := s.db.Raw(sql).Scan(&data).Error
 	if err != nil {
 		return nil, common.ErrDB(err)
 	}
