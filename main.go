@@ -44,6 +44,7 @@ func main() {
 
 	chat := v1.Group("/chat")
 	{
+		chat.GET("/", middleware.RequiredAuth(appCtx, userStore), ginchatmessage.ListMessageRecentConversation(appCtx))
 		chat.POST("/initiate", ginchatroom.InitiateChat(appCtx))
 		chat.GET("/:roomId", ginchatmessage.ListChatMessage(appCtx))
 		chat.POST("/:roomId/message", ginchatmessage.PostChatMessage(appCtx))

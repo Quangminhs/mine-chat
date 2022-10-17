@@ -47,3 +47,48 @@ func (s *sqlStore) ListChatMessageByCondition(ctx context.Context, conditions ma
 	return result, nil
 
 }
+
+func (s *sqlStore) ListChatMessageRecentConversation(ctx context.Context, roomIds []int,
+	filter *modelchatmessage.Filter,
+	paging *common.Paging, moreKeys ...string,
+) ([]modelchatmessage.ChatMessage, error) {
+	var result []modelchatmessage.ChatMessage
+	db := s.db
+
+	db = db.Table(modelchatmessage.ChatMessage{}.TableName()).
+		Where("room_chat_id in ?", roomIds).
+		Where("status in (1)").
+		Group("room_chat_id DESC")
+
+	if v := filter; v != nil {
+		if v.PostByUser > 0 {
+			db = db.Where("post_by_user = ?", v.PostByUser)
+		}
+	}
+
+	if err := db.Count(&paging.Total).Error; err != nil {
+		return nil, common.ErrDB(err)
+	}
+
+	for i := range moreKeys {
+		db = db.Preload(moreKeys[i])
+	}
+
+	if v := paging.FakeCursor; v != "" {
+		if uid, err := common.FromBase58(v); err == nil {
+			db = db.Where("id < ?", uid.GetLocalID())
+		}
+	} else {
+		db = db.Offset((paging.Page - 1) * paging.Limit)
+	}
+
+	if err := db.
+		Limit(paging.Limit).
+		Order("id desc").
+		Find(&result).Error; err != nil {
+		return nil, common.ErrDB(err)
+	}
+
+	return result, nil
+
+}

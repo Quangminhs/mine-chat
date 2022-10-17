@@ -17,7 +17,8 @@ type ChatMessage struct {
 	PostByUser         *common.SimpleUser `json:"post_by_user" gorm:"preload:false;""`
 	Status             int                `json:"status" gorm:"column:status;"`
 	ReadByRecipients   *ReadByRecipients  `json:"read_by_recipients" gorm:"read_by_recipients;"`
-	CreateAt           *time.Time         `json:"created_at,omitempty" gorm:"column:created_at;"`
+	CreatedAt          *time.Time         `json:"created_at,omitempty" gorm:"column:created_at;"`
+	UpdatedAt          *time.Time         `json:"updated_at,omitempty" gorm:"column:updated_at;"`
 }
 
 func (data *ChatMessage) Mask(isAdminOrOwner bool) {
